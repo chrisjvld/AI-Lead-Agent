@@ -22,7 +22,7 @@ export function Dropzone({
 
   return (
     <label
-      className="flex min-h-52 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-border bg-surface-muted p-section text-center"
+      className="flex min-h-11 cursor-pointer items-center gap-3 rounded-md border border-dashed border-border bg-surface px-4 py-3 text-left"
       onDragOver={(event) => event.preventDefault()}
       onDrop={handleDrop}
     >
@@ -33,16 +33,21 @@ export function Dropzone({
         disabled={disabled}
         onChange={handleInput}
       />
-      <span className="font-medium">
-        {file ? file.name : "Drop a CSV file here"}
-      </span>
-      <span className="mt-2 text-sm text-muted">
-        {file
-          ? `${Math.max(1, Math.round(file.size / 1024))} KB selected`
-          : "or click to choose a file"}
-      </span>
-      <span className="mt-3 text-xs text-muted">
-        Required columns: company, website, contact_name, title, email
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 20 20"
+        className="size-4 shrink-0 text-muted"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+      >
+        <path d="M10 13V3m0 0L6.5 6.5M10 3l3.5 3.5M4 11v4a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-4" />
+      </svg>
+      <span className="text-xs">
+        <strong className="font-medium">
+          {file ? "Choose another CSV" : "Choose a CSV"}
+        </strong>
+        <span className="text-muted"> or drop it here</span>
       </span>
     </label>
   );

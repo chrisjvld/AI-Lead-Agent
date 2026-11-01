@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Lead Research",
-  description: "AI-powered lead qualification and outreach workspace.",
+  title: "Scout",
+  description: "AI-powered lead research and outreach workspace.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

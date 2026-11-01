@@ -11,7 +11,7 @@ type ButtonProps = {
 };
 
 const variantStyles = {
-  primary: "border-accent bg-accent text-surface hover:bg-accent-hover",
+  primary: "border-foreground bg-foreground text-surface hover:bg-muted",
   secondary:
     "border-border bg-surface text-foreground hover:bg-surface-muted",
   danger: "border-danger bg-surface text-danger hover:bg-surface-muted",
@@ -29,7 +29,7 @@ export function Button({
   const disabledStyles = disabled
     ? "pointer-events-none cursor-not-allowed opacity-50"
     : "";
-  const styles = `inline-flex min-h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 ${variantStyles[variant]} ${disabledStyles} ${className}`;
+  const styles = `inline-flex min-h-7 items-center justify-center rounded-md border px-2.5 py-1 text-[10px] font-medium disabled:cursor-not-allowed disabled:opacity-50 ${variantStyles[variant]} ${disabledStyles} ${className}`;
 
   if (href) {
     return (

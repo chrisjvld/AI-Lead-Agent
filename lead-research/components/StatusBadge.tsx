@@ -6,10 +6,10 @@ type StatusBadgeProps = {
 
 const labels: Record<LeadRecord["status"], string> = {
   queued: "Queued",
-  researching: "Researching",
-  scoring: "Scoring",
+  researching: "Researching…",
+  scoring: "Scoring…",
   done: "Done",
-  failed: "Failed",
+  failed: "Site didn’t load",
 };
 
 const styles: Record<LeadRecord["status"], string> = {
@@ -22,9 +22,7 @@ const styles: Record<LeadRecord["status"], string> = {
 
 export function StatusBadge({ status }: StatusBadgeProps) {
   return (
-    <span
-      className={`inline-flex rounded-full border border-border bg-surface-muted px-2.5 py-1 text-xs font-medium ${styles[status]}`}
-    >
+    <span className={`text-xs ${styles[status]}`}>
       {labels[status]}
     </span>
   );
