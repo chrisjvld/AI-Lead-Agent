@@ -5,7 +5,7 @@ export default function ScoringRulesPage() {
     <AppShell active="scoring">
       <div className="max-w-[31rem]">
         <header className="border-b border-border pb-3">
-          <h1 className="text-base font-semibold">Scoring rules</h1>
+          <h1 className="text-xl font-semibold">Scoring rules</h1>
           <p className="mt-1 text-xs text-muted">
             Scout uses these fixed criteria when qualifying every lead.
           </p>
@@ -49,11 +49,11 @@ export default function ScoringRulesPage() {
 
         <section className="mt-3 grid grid-cols-3 overflow-hidden rounded-md border border-border bg-surface text-center text-xs">
           <div className="border-r border-border p-3">
-            <p className="font-medium text-success">Hot</p>
+            <p className="font-medium text-hot">Hot</p>
             <p className="mt-1 text-muted">70–100</p>
           </div>
           <div className="border-r border-border p-3">
-            <p className="font-medium text-warning">Warm</p>
+            <p className="font-medium text-warm">Warm</p>
             <p className="mt-1 text-muted">40–69</p>
           </div>
           <div className="p-3">

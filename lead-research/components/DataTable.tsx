@@ -12,8 +12,8 @@ type DataTableProps = {
 };
 
 const tierStyles: Record<NonNullable<LeadRecord["tier"]>, string> = {
-  Hot: "text-danger",
-  Warm: "text-warning",
+  Hot: "text-hot",
+  Warm: "text-warm",
   Cold: "text-muted",
 };
 
@@ -43,8 +43,8 @@ export function DataTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[34rem] border-collapse text-left text-[10px]">
-        <thead className="border-b border-border text-[9px] text-muted">
+      <table className="w-full min-w-[34rem] border-collapse text-left text-[13.5px]">
+        <thead className="border-b border-border text-xs text-muted">
           <tr>
             <th className="px-3 py-2 font-medium">Company</th>
             <th className="px-3 py-2 font-medium">Contact</th>
@@ -79,7 +79,7 @@ export function DataTable({
                   }`}
                 >
                   <span className="font-medium">{lead.company}</span>
-                  <span className="ml-2 text-[10px] text-muted">
+                  <span className="ml-2 text-xs text-muted">
                     {domain(lead.website)}
                   </span>
                 </td>
@@ -92,9 +92,7 @@ export function DataTable({
                 <td className="px-3 py-2">
                   {lead.tier ? (
                     <span className={tierStyles[lead.tier]}>{lead.tier}</span>
-                  ) : (
-                    <span className="text-muted">—</span>
-                  )}
+                  ) : null}
                 </td>
                 <td className="whitespace-nowrap px-3 py-2">
                   <StatusBadge status={lead.status} />

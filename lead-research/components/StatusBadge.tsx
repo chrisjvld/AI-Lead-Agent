@@ -22,7 +22,7 @@ const styles: Record<LeadRecord["status"], string> = {
 
 export function StatusBadge({ status }: StatusBadgeProps) {
   return (
-    <span className={`text-xs ${styles[status]}`}>
+    <span className={`text-[13.5px] ${styles[status]}`}>
       {labels[status]}
     </span>
   );

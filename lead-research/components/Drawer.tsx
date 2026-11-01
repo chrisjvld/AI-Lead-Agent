@@ -15,10 +15,18 @@ type DrawerProps = {
 };
 
 const tierStyles: Record<NonNullable<LeadRecord["tier"]>, string> = {
-  Hot: "text-danger",
-  Warm: "text-warning",
+  Hot: "text-hot",
+  Warm: "text-warm",
   Cold: "text-muted",
 };
+
+function domain(website: string) {
+  try {
+    return new URL(website).hostname.replace(/^www\./, "");
+  } catch {
+    return website;
+  }
+}
 
 export function Drawer({
   error,
@@ -33,17 +41,17 @@ export function Drawer({
   total,
 }: DrawerProps) {
   const canEdit = lead.status === "done";
+  const hasUnsavedChanges = message !== (lead.message ?? "");
 
   return (
     <aside
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="lead-drawer-title"
+      role="complementary"
+      aria-label="Lead details"
       className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto border-l border-border bg-surface pb-20 shadow-drawer sm:w-[var(--token-drawer-width)]"
     >
       <div className="p-3">
         <div className="flex items-center justify-between">
-          <p className="text-[10px] text-muted">
+          <p className="text-xs text-muted">
             {position} of {total}
           </p>
           <button
@@ -57,19 +65,19 @@ export function Drawer({
         </div>
 
         <div className="mt-4">
-          <h2 id="lead-drawer-title" className="text-sm font-semibold">
+          <h2 className="text-lg font-semibold">
             {lead.company}
           </h2>
-          <p className="mt-0.5 text-[10px] text-muted">
+          <p className="mt-0.5 text-xs text-muted">
             {lead.contactName}, {lead.title}
           </p>
           <a
-            className="mt-0.5 block text-[10px] text-accent underline"
+            className="mt-0.5 block text-xs text-accent underline"
             href={lead.website}
             target="_blank"
             rel="noreferrer"
           >
-            {new URL(lead.website).hostname.replace(/^www\./, "")}
+            {domain(lead.website)}
           </a>
         </div>
 
@@ -81,7 +89,7 @@ export function Drawer({
 
         <section className="mt-5 border-t border-border pt-4">
           <div className="flex items-end gap-2">
-            <span className="text-2xl font-semibold tabular-nums">
+            <span className="text-[30px] font-semibold tabular-nums">
               {lead.score ?? "—"}
             </span>
             {lead.tier ? (
@@ -89,7 +97,7 @@ export function Drawer({
                 {lead.tier}
               </span>
             ) : null}
-            <span className="ml-auto pb-1 text-[9px] text-muted">
+            <span className="ml-auto pb-1 text-xs text-muted">
               threshold 70
             </span>
           </div>
@@ -103,18 +111,18 @@ export function Drawer({
         </section>
 
         <section className="mt-5">
-          <h3 className="text-[10px] text-muted">What they do</h3>
-          <p className="mt-2 text-xs leading-5">
+          <h3 className="text-xs text-muted">What they do</h3>
+          <p className="mt-2 text-sm leading-5">
             {lead.summary ?? "Waiting for research."}
           </p>
         </section>
 
         <section className="mt-5">
-          <h3 className="text-[10px] text-muted">
+          <h3 className="text-xs text-muted">
             Why {lead.score ?? "this score"}
           </h3>
           {lead.reasons?.length ? (
-            <ol className="mt-2 list-decimal space-y-1 pl-5 text-xs leading-4">
+            <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm leading-5">
               {lead.reasons.slice(0, 3).map((reason) => (
                 <li key={reason}>{reason}</li>
               ))}
@@ -126,16 +134,16 @@ export function Drawer({
 
         <section className="mt-5">
           <div className="flex items-center justify-between gap-2">
-            <label htmlFor="outreach-message" className="text-[10px] text-muted">
+            <label htmlFor="outreach-message" className="text-xs text-muted">
               Opener
             </label>
-            <span className="truncate text-[9px] text-muted">
+            <span className="truncate text-xs text-muted">
               to {lead.email}
             </span>
           </div>
           <textarea
             id="outreach-message"
-            className="mt-2 min-h-24 w-full resize-y rounded-md border border-border bg-surface p-2 text-xs leading-5 outline-none focus:border-foreground disabled:bg-surface-muted"
+            className="mt-2 min-h-24 w-full resize-y rounded-md border border-border bg-surface p-2 text-sm leading-5 outline-none focus:border-foreground disabled:bg-surface-muted"
             disabled={!canEdit || isSaving}
             maxLength={300}
             value={message}
@@ -144,8 +152,8 @@ export function Drawer({
               canEdit ? "Write an outreach opener…" : "Available after processing"
             }
           />
-          <div className="mt-1 flex justify-between text-[9px] text-muted">
-            <span>Edited by you</span>
+          <div className="mt-1 flex justify-between text-xs text-muted">
+            <span>{hasUnsavedChanges ? "Unsaved changes" : null}</span>
             <span>{message.length} / 300</span>
           </div>
 
@@ -156,6 +164,7 @@ export function Drawer({
       <footer className="fixed right-0 bottom-0 flex w-full gap-2 border-t border-border bg-surface p-3 sm:w-[var(--token-drawer-width)]">
         <Button
           className="flex-1"
+          size="drawer"
           variant="secondary"
           disabled={!canEdit || isSaving}
           onClick={onSave}
@@ -164,6 +173,7 @@ export function Drawer({
         </Button>
         <Button
           className="flex-[1.6]"
+          size="drawer"
           disabled={!canEdit || isSaving || lead.approved}
           onClick={onApprove}
         >

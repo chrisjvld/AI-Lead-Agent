@@ -36,7 +36,7 @@ export function AppShell({ active, children, leadCount }: AppShellProps) {
                 key={item.id}
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex items-center justify-between rounded-md px-2 py-2 text-[10px] ${
+                className={`flex items-center justify-between rounded-md px-2 py-2 text-xs ${
                   isActive
                     ? "bg-surface-muted font-medium text-foreground"
                     : "text-muted hover:bg-surface-muted hover:text-foreground"
@@ -44,7 +44,7 @@ export function AppShell({ active, children, leadCount }: AppShellProps) {
               >
                 <span>{item.label}</span>
                 {item.id === "leads" && leadCount !== undefined ? (
-                  <span className="text-[10px] text-muted">{leadCount}</span>
+                  <span className="text-xs text-muted">{leadCount}</span>
                 ) : null}
               </Link>
             );
@@ -52,12 +52,12 @@ export function AppShell({ active, children, leadCount }: AppShellProps) {
         </nav>
 
         <div className="mt-auto hidden items-center gap-2 px-2 py-3 md:flex">
-          <span className="flex size-5 items-center justify-center rounded-full bg-foreground text-[9px] font-semibold text-surface">
+          <span className="flex size-5 items-center justify-center rounded-full bg-foreground text-xs font-semibold text-surface">
             CJ
           </span>
           <div className="min-w-0 leading-tight">
-            <p className="truncate text-[11px] font-medium">Christoffer</p>
-            <p className="truncate text-[10px] text-muted">Demo workspace</p>
+            <p className="truncate text-xs font-medium">Christoffer</p>
+            <p className="truncate text-xs text-muted">Demo workspace</p>
           </div>
         </div>
       </aside>

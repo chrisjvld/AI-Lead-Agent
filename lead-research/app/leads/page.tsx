@@ -159,9 +159,9 @@ export default function LeadsPage() {
       >
         <header className="flex min-h-8 flex-col gap-3 sm:flex-row sm:items-center">
           <div className="flex items-baseline gap-3">
-            <h1 className="text-sm font-semibold">Leads</h1>
+            <h1 className="text-xl font-semibold">Leads</h1>
             {leads.length > 0 ? (
-              <span className="text-[10px] text-muted">
+              <span className="text-xs text-muted">
                 {leads.length} imported leads
               </span>
             ) : null}
@@ -171,7 +171,7 @@ export default function LeadsPage() {
               type="search"
               aria-label="Search companies"
               placeholder="Search companies"
-              className="h-7 w-36 rounded-md border border-border bg-surface px-3 text-[10px] outline-none focus:border-foreground"
+              className="h-[34px] w-36 rounded-md border border-border bg-surface px-3 text-sm outline-none focus:border-foreground"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
             />
@@ -190,7 +190,7 @@ export default function LeadsPage() {
 
       {isProcessing ? (
         <div
-            className="mt-3 flex items-center gap-3 border-y border-border py-2 text-[10px]"
+            className="mt-3 flex items-center gap-3 border-y border-border py-2 text-xs"
           role="status"
         >
             <strong className="whitespace-nowrap font-medium">
@@ -232,7 +232,7 @@ export default function LeadsPage() {
                   <button
                     key={item}
                     type="button"
-                    className={`rounded-md px-2 py-1 text-[10px] ${
+                    className={`rounded-md px-2 py-1 text-xs ${
                       filter === item
                         ? "bg-surface-muted font-medium"
                         : "text-muted hover:text-foreground"
@@ -243,7 +243,7 @@ export default function LeadsPage() {
                   </button>
                 ))}
               </div>
-              <span className="ml-auto text-[10px] text-muted">
+              <span className="ml-auto text-xs text-muted">
                 Avg. score {stats.average || "—"}
               </span>
             </div>

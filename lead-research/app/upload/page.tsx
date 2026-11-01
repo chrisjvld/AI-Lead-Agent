@@ -132,7 +132,7 @@ export default function UploadPage() {
     <AppShell active="upload" leadCount={leads.length}>
       <div className="max-w-[31rem]">
         <header className="border-b border-border pb-3">
-          <h1 className="text-base font-semibold">Import leads</h1>
+          <h1 className="text-xl font-semibold">Import leads</h1>
           <p className="mt-1 text-xs text-muted">
             One row per prospect. Scout visits each website, scores the fit and
             drafts an opener.
@@ -150,20 +150,20 @@ export default function UploadPage() {
             <section className="mt-3 overflow-hidden rounded-md border border-border bg-surface">
               <div className="flex items-center border-b border-border px-3 py-3">
                 <span className="text-xs font-medium">{file.name}</span>
-                <span className="ml-2 text-[10px] text-muted">
+                <span className="ml-2 text-xs text-muted">
                   {rowCount} rows
                 </span>
                 <button
                   type="button"
-                  className="ml-auto text-[10px] text-muted underline hover:text-foreground"
+                  className="ml-auto text-xs text-muted underline hover:text-foreground"
                   onClick={() => void chooseFile(null)}
                 >
                   Remove
                 </button>
               </div>
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[30rem] text-left text-[10px]">
-                  <thead className="border-b border-border text-muted">
+                <table className="w-full min-w-[30rem] text-left text-[13.5px]">
+                  <thead className="border-b border-border text-xs text-muted">
                     <tr>
                       {[
                         "company",
@@ -203,7 +203,7 @@ export default function UploadPage() {
                 </table>
               </div>
               {rowCount > previewRows.length ? (
-                <p className="border-t border-border px-3 py-2 text-[10px] text-muted">
+                <p className="border-t border-border px-3 py-2 text-xs text-muted">
                   and {rowCount - previewRows.length} more
                 </p>
               ) : null}

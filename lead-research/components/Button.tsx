@@ -6,6 +6,7 @@ type ButtonProps = {
   disabled?: boolean;
   href?: string;
   onClick?: MouseEventHandler<HTMLButtonElement>;
+  size?: "default" | "drawer";
   type?: "button" | "submit";
   variant?: "primary" | "secondary" | "danger";
 };
@@ -23,13 +24,15 @@ export function Button({
   disabled = false,
   href,
   onClick,
+  size = "default",
   type = "button",
   variant = "primary",
 }: ButtonProps) {
   const disabledStyles = disabled
     ? "pointer-events-none cursor-not-allowed opacity-50"
     : "";
-  const styles = `inline-flex min-h-7 items-center justify-center rounded-md border px-2.5 py-1 text-[10px] font-medium disabled:cursor-not-allowed disabled:opacity-50 ${variantStyles[variant]} ${disabledStyles} ${className}`;
+  const heightStyles = size === "drawer" ? "h-10" : "h-[34px]";
+  const styles = `inline-flex items-center justify-center rounded-md border px-3 py-1 text-xs font-medium disabled:cursor-not-allowed disabled:opacity-50 ${heightStyles} ${variantStyles[variant]} ${disabledStyles} ${className}`;
 
   if (href) {
     return (

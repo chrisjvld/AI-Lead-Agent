@@ -12,7 +12,7 @@ export function ScorePill({ score, tier }: ScorePillProps) {
 
   return (
     <span
-      className="text-xs font-medium tabular-nums"
+      className="text-[13.5px] font-medium tabular-nums"
       title={`${tier} lead`}
     >
       {score}

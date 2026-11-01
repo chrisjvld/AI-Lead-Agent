@@ -1,17 +1,19 @@
 @import "tailwindcss";
 
 :root {
-  --token-color-background: #f7f7f3;
+  --token-color-background: #f6f6f3;
   --token-color-surface: #ffffff;
-  --token-color-surface-muted: #ecece8;
-  --token-color-text: #191919;
-  --token-color-text-muted: #686866;
-  --token-color-border: #deded9;
-  --token-color-accent: #2546cc;
-  --token-color-accent-hover: #18349f;
-  --token-color-success: #2e7658;
-  --token-color-warning: #a85f13;
-  --token-color-danger: #a33a32;
+  --token-color-surface-muted: #eaeae5;
+  --token-color-text: #17181c;
+  --token-color-text-muted: #62646b;
+  --token-color-border: #e4e4df;
+  --token-color-accent: #2a44c4;
+  --token-color-accent-hover: #1e3399;
+  --token-color-success: #1f7a4c;
+  --token-color-hot: #b4441b;
+  --token-color-warm: #8a5a00;
+  --token-color-warning: #8a5a00;
+  --token-color-danger: #b42318;
   --token-color-overlay: rgb(25 25 25 / 0.12);
 
   --token-radius-sm: 0.2rem;
@@ -21,8 +23,8 @@
   --token-space-page: 1.5rem;
   --token-space-section: 1rem;
   --token-space-card: 0.75rem;
-  --token-sidebar-width: 9.6rem;
-  --token-drawer-width: 15.25rem;
+  --token-sidebar-width: 216px;
+  --token-drawer-width: 380px;
 
   --token-shadow-card: none;
   --token-shadow-drawer: none;
@@ -38,6 +40,8 @@
   --color-accent: var(--token-color-accent);
   --color-accent-hover: var(--token-color-accent-hover);
   --color-success: var(--token-color-success);
+  --color-hot: var(--token-color-hot);
+  --color-warm: var(--token-color-warm);
   --color-warning: var(--token-color-warning);
   --color-danger: var(--token-color-danger);
   --color-overlay: var(--token-color-overlay);
@@ -58,7 +62,7 @@ body {
   background: var(--token-color-background);
   color: var(--token-color-text);
   font-family: var(--font-sans), sans-serif;
-  font-size: 12px;
+  font-size: 14px;
 }
 
 button,
