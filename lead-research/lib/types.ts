@@ -41,6 +41,35 @@ export const PipelineLeadSchema = z
   })
   .strict();
 
+export const LeadRecordSchema = z
+  .object({
+    id: z.number().int().positive(),
+    company: z.string(),
+    website: z.string(),
+    contactName: z.string(),
+    title: z.string(),
+    email: z.string(),
+    status: z.enum(["queued", "researching", "scoring", "done", "failed"]),
+    summary: z.string().nullable(),
+    industry: z.string().nullable(),
+    sizeSignal: z.string().nullable(),
+    score: z.number().int().min(0).max(100).nullable(),
+    tier: z.enum(["Hot", "Warm", "Cold"]).nullable(),
+    reasons: z.array(z.string()).nullable(),
+    message: z.string().nullable(),
+    approved: z.boolean(),
+    error: z.string().nullable(),
+    createdAt: z.string(),
+  })
+  .strict();
+
+export const LeadsResponseSchema = z
+  .object({
+    leads: z.array(LeadRecordSchema),
+  })
+  .strict();
+
 export type LeadAnalysis = z.infer<typeof LeadAnalysisSchema>;
 export type LeadInsight = z.infer<typeof LeadInsightSchema>;
 export type PipelineLead = z.infer<typeof PipelineLeadSchema>;
+export type LeadRecord = z.infer<typeof LeadRecordSchema>;
