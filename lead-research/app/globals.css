@@ -1,72 +1,339 @@
 @import "tailwindcss";
 
+/*
+ * Scout design tokens.
+ * Shared portfolio design language (Scout, Relay, Ledger): calm, precise,
+ * Apple-style system UI. One accent, translucent chrome, layered shadows.
+ */
+
 :root {
-  --token-color-background: #f6f6f3;
-  --token-color-surface: #ffffff;
-  --token-color-surface-muted: #eaeae5;
-  --token-color-text: #17181c;
-  --token-color-text-muted: #62646b;
-  --token-color-border: #e4e4df;
-  --token-color-accent: #2a44c4;
-  --token-color-accent-hover: #1e3399;
-  --token-color-success: #1f7a4c;
-  --token-color-hot: #b4441b;
-  --token-color-warm: #8a5a00;
-  --token-color-warning: #8a5a00;
-  --token-color-danger: #b42318;
-  --token-color-overlay: rgb(25 25 25 / 0.12);
+  color-scheme: light;
 
-  --token-radius-sm: 0.2rem;
-  --token-radius-md: 0.3rem;
-  --token-radius-lg: 0.4rem;
+  --bg: #f5f5f7;
+  --surface: #ffffff;
+  --surface-2: #fbfbfd;
+  --material: rgba(255, 255, 255, 0.72);
+  --material-edge: rgba(255, 255, 255, 0.6);
+  --text: #1d1d1f;
+  --text-2: #6e6e73;
+  --text-3: #86868b;
+  --separator: rgba(0, 0, 0, 0.08);
+  --fill: rgba(0, 0, 0, 0.04);
+  --fill-2: rgba(0, 0, 0, 0.07);
+  --accent: #0071e3;
+  --accent-soft: rgba(0, 113, 227, 0.1);
+  --success: #1f9d55;
+  --warning: #c77700;
+  --danger: #d70015;
+  --scrim: rgba(0, 0, 0, 0.18);
 
-  --token-space-page: 1.5rem;
-  --token-space-section: 1rem;
-  --token-space-card: 0.75rem;
-  --token-sidebar-width: 216px;
-  --token-drawer-width: 380px;
+  /* Project accent tint: logo mark only. */
+  --scout-tint: #0071e3;
 
-  --token-shadow-card: none;
-  --token-shadow-drawer: none;
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.04), 0 4px 16px rgba(0, 0, 0, 0.04);
+  --shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.05), 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-sheet: 0 2px 6px rgba(0, 0, 0, 0.04), 0 24px 64px rgba(0, 0, 0, 0.14);
+
+  --sidebar-width: 15rem;
+  --drawer-width: 28rem;
+  --tabbar-height: 3.5rem;
+
+  --font-text: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Inter Display", "Inter", system-ui, sans-serif;
+  --font-mono-stack: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #000000;
+    --surface: #1c1c1e;
+    --surface-2: #2c2c2e;
+    --material: rgba(28, 28, 30, 0.72);
+    --material-edge: rgba(255, 255, 255, 0.06);
+    --text: #f5f5f7;
+    --text-2: #a1a1a6;
+    --text-3: #8e8e93;
+    --separator: rgba(255, 255, 255, 0.1);
+    --fill: rgba(255, 255, 255, 0.06);
+    --fill-2: rgba(255, 255, 255, 0.1);
+    --accent: #0a84ff;
+    --accent-soft: rgba(10, 132, 255, 0.16);
+    --success: #30d158;
+    --warning: #ff9f0a;
+    --danger: #ff453a;
+    --scrim: rgba(0, 0, 0, 0.5);
+    --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+    --shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+    --shadow-sheet: 0 2px 6px rgba(0, 0, 0, 0.4), 0 24px 64px rgba(0, 0, 0, 0.6);
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #000000;
+  --surface: #1c1c1e;
+  --surface-2: #2c2c2e;
+  --material: rgba(28, 28, 30, 0.72);
+  --material-edge: rgba(255, 255, 255, 0.06);
+  --text: #f5f5f7;
+  --text-2: #a1a1a6;
+  --text-3: #8e8e93;
+  --separator: rgba(255, 255, 255, 0.1);
+  --fill: rgba(255, 255, 255, 0.06);
+  --fill-2: rgba(255, 255, 255, 0.1);
+  --accent: #0a84ff;
+  --accent-soft: rgba(10, 132, 255, 0.16);
+  --success: #30d158;
+  --warning: #ff9f0a;
+  --danger: #ff453a;
+  --scrim: rgba(0, 0, 0, 0.5);
+  --shadow-card: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.2);
+  --shadow-raised: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-sheet: 0 2px 6px rgba(0, 0, 0, 0.4), 0 24px 64px rgba(0, 0, 0, 0.6);
 }
 
 @theme inline {
-  --color-background: var(--token-color-background);
-  --color-surface: var(--token-color-surface);
-  --color-surface-muted: var(--token-color-surface-muted);
-  --color-foreground: var(--token-color-text);
-  --color-muted: var(--token-color-text-muted);
-  --color-border: var(--token-color-border);
-  --color-accent: var(--token-color-accent);
-  --color-accent-hover: var(--token-color-accent-hover);
-  --color-success: var(--token-color-success);
-  --color-hot: var(--token-color-hot);
-  --color-warm: var(--token-color-warm);
-  --color-warning: var(--token-color-warning);
-  --color-danger: var(--token-color-danger);
-  --color-overlay: var(--token-color-overlay);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-  --radius-sm: var(--token-radius-sm);
-  --radius-md: var(--token-radius-md);
-  --radius-lg: var(--token-radius-lg);
-  --spacing-page: var(--token-space-page);
-  --spacing-section: var(--token-space-section);
-  --spacing-card: var(--token-space-card);
-  --shadow-card: var(--token-shadow-card);
-  --shadow-drawer: var(--token-shadow-drawer);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-material: var(--material);
+  --color-fg: var(--text);
+  --color-fg-2: var(--text-2);
+  --color-fg-3: var(--text-3);
+  --color-separator: var(--separator);
+  --color-fill: var(--fill);
+  --color-fill-2: var(--fill-2);
+  --color-accent: var(--accent);
+  --color-accent-soft: var(--accent-soft);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+  --color-scrim: var(--scrim);
+  --color-scout: var(--scout-tint);
+
+  --font-sans: var(--font-text);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono-stack);
+
+  --radius-chip: 0.5rem;
+  --radius-btn: 0.75rem;
+  --radius-card: 1.125rem;
+  --radius-sheet: 1.5rem;
+
+  --shadow-card: var(--shadow-card);
+  --shadow-raised: var(--shadow-raised);
+  --shadow-sheet: var(--shadow-sheet);
+}
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
-  min-height: 100vh;
-  background: var(--token-color-background);
-  color: var(--token-color-text);
-  font-family: var(--font-sans), sans-serif;
-  font-size: 14px;
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-text);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+  transition: background-color 200ms ease, color 200ms ease;
 }
 
 button,
 input,
 textarea {
   font: inherit;
+  color: inherit;
+}
+
+button,
+a,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+/* Typography roles. Tracking and leading are size-specific. */
+.type-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+}
+
+.type-heading {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+}
+
+.type-meta {
+  font-size: 0.8125rem;
+  letter-spacing: 0.01em;
+  color: var(--text-2);
+}
+
+.type-eyebrow {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  color: var(--text-3);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Translucent chrome. Content scrolls beneath; never stacked on another material. */
+.material {
+  background: var(--material);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(20px) saturate(180%);
+}
+
+/* Scroll-edge fade instead of a hard divider. Shown only once content is beneath. */
+.scroll-edge {
+  position: relative;
+}
+
+.scroll-edge::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -12px 0;
+  height: 12px;
+  pointer-events: none;
+  background: linear-gradient(to bottom, var(--separator), transparent);
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.scroll-edge[data-scrolled="true"]::after {
+  opacity: 0.6;
+}
+
+/* Focus: one consistent, visible ring. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+/* Press feedback on pointer-down. */
+.pressable {
+  transition: transform 100ms ease-out, background-color 150ms ease, border-color 150ms ease,
+    color 150ms ease, box-shadow 150ms ease, opacity 150ms ease;
+}
+
+.pressable:active:not(:disabled):not([aria-disabled="true"]) {
+  transform: scale(0.97);
+}
+
+/* Quiet "working" shimmer used by pipeline steps. Transform-only. */
+@keyframes scout-sweep {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+.sweep {
+  position: absolute;
+  inset: 0;
+  width: 40%;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 85%, white), transparent);
+  animation: scout-sweep 1.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+
+@keyframes scout-breathe {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.8);
+  }
+}
+
+.breathe {
+  animation: scout-breathe 1.6s ease-in-out infinite;
+}
+
+@keyframes scout-shimmer {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--fill) 0%, var(--fill-2) 50%, var(--fill) 100%);
+  background-size: 200% 100%;
+  animation: scout-shimmer 1.6s linear infinite;
+  border-radius: 0.375rem;
+}
+
+/* Accessibility preferences. */
+@media (prefers-reduced-motion: reduce) {
+  .sweep {
+    animation: none;
+    transform: none;
+    width: 100%;
+    opacity: 0.55;
+  }
+
+  .breathe,
+  .skeleton {
+    animation: none;
+  }
+
+  .pressable:active:not(:disabled) {
+    transform: none;
+  }
+
+  body {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .material {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --separator: color-mix(in srgb, var(--text) 30%, transparent);
+    --text-2: color-mix(in srgb, var(--text) 80%, var(--bg));
+    --text-3: color-mix(in srgb, var(--text) 70%, var(--bg));
+  }
+
+  .material {
+    background: var(--surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: inset 0 0 0 1px var(--separator);
+  }
 }
