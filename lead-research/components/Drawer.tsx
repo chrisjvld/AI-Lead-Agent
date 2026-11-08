@@ -96,6 +96,12 @@ export function Drawer(props: DrawerProps) {
     // Only claim clearly horizontal drags that do not start on a control.
     dragging.current =
       !isInteractive(event.target) && Math.abs(info.offset.x) > Math.abs(info.offset.y);
+    if (dragging.current) {
+      // A drag must not leave a text selection behind: a later press on
+      // selected text would start a native text drag and swallow the gesture.
+      window.getSelection()?.removeAllRanges();
+      if (panelRef.current) panelRef.current.style.userSelect = "none";
+    }
   }
 
   function onPan(_event: PointerEvent, info: PanInfo) {
@@ -109,13 +115,26 @@ export function Drawer(props: DrawerProps) {
   function onPanEnd(_event: PointerEvent, info: PanInfo) {
     if (!dragging.current) return;
     dragging.current = false;
+    if (panelRef.current) panelRef.current.style.userSelect = "";
     const width = panelRef.current?.offsetWidth ?? 448;
     const velocity = info.velocity.x;
     const projected = x.get() + project(velocity);
 
     if (projected > width / 2 && velocity > -200) {
-      // Hand off the finger's velocity so there is no seam, then close.
-      animate(x, width, { ...momentumSpring, bounce: 0, velocity }).then(onClose);
+      // Hand off the finger's velocity so there is no seam. Close as soon as
+      // the panel is nearly off the edge rather than waiting for the spring
+      // to settle; the outer layer's exit continues in the same direction.
+      const controls = animate(x, width, { ...momentumSpring, bounce: 0, velocity });
+      const unsubscribe = x.on("change", (value) => {
+        if (value > width * 0.9) {
+          unsubscribe();
+          onClose();
+        }
+      });
+      void controls.then(() => {
+        unsubscribe();
+        onClose();
+      });
     } else {
       animate(x, 0, { ...momentumSpring, velocity });
     }
