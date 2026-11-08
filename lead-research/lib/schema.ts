@@ -4,7 +4,9 @@ import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 export const leadStatuses = [
   "queued",
   "researching",
+  "enriching",
   "scoring",
+  "drafting",
   "done",
   "failed",
 ] as const;

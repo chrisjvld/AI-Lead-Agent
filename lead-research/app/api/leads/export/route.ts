@@ -1,3 +1,4 @@
+import { connection } from "next/server";
 import { asc, eq } from "drizzle-orm";
 import Papa from "papaparse";
 
@@ -5,6 +6,10 @@ import { db } from "@/lib/db";
 import { leads } from "@/lib/schema";
 
 export async function GET() {
+  // better-sqlite3 is synchronous; without this the query would run once at
+  // build time and the route would be prerendered as static.
+  await connection();
+
   const approved = db
     .select()
     .from(leads)
