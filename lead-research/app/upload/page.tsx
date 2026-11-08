@@ -1,12 +1,15 @@
 "use client";
 
+import { ArrowRight, Check, CircleAlert, Download, FileSpreadsheet, Sparkles, X } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
 import Papa from "papaparse";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { z } from "zod";
 
-import { AppShell } from "@/components/AppShell";
 import { Button } from "@/components/Button";
 import { Dropzone } from "@/components/Dropzone";
+import { PageContainer, PageHeader } from "@/components/PageHeader";
 import { useLeads } from "@/hooks/useLeads";
 
 const UploadResponseSchema = z.object({
@@ -21,6 +24,9 @@ type PreviewRow = {
   email?: string;
 };
 
+const REQUIRED_FIELDS = ["company", "website", "contact_name", "title", "email"] as const;
+const PREVIEW_ROWS = 5;
+
 function responseError(value: unknown) {
   if (
     typeof value === "object" &&
@@ -34,10 +40,18 @@ function responseError(value: unknown) {
   return "The CSV could not be uploaded.";
 }
 
+const steps = [
+  { title: "Research", body: "Reads each company’s homepage." },
+  { title: "Score", body: "Rates fit 0–100 against your profile." },
+  { title: "Draft", body: "Writes an opener from a real detail." },
+];
+
 export default function UploadPage() {
-  const { leads } = useLeads();
+  const router = useRouter();
+  const { refresh } = useLeads();
   const [file, setFile] = useState<File | null>(null);
   const [previewRows, setPreviewRows] = useState<PreviewRow[]>([]);
+  const [headers, setHeaders] = useState<string[]>([]);
   const [rowCount, setRowCount] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -48,6 +62,7 @@ export default function UploadPage() {
     setError(null);
     setImported(null);
     setPreviewRows([]);
+    setHeaders([]);
     setRowCount(0);
 
     if (!nextFile) return;
@@ -63,33 +78,23 @@ export default function UploadPage() {
       return;
     }
 
-    setPreviewRows(parsed.data.slice(0, 3));
+    setHeaders(parsed.meta.fields ?? []);
+    setPreviewRows(parsed.data.slice(0, PREVIEW_ROWS));
     setRowCount(parsed.data.length);
   }, []);
 
+  const loadSample = useCallback(async () => {
+    const response = await fetch("/sample_leads.csv");
+    if (!response.ok) return;
+    const blob = await response.blob();
+    await chooseFile(new File([blob], "sample_leads.csv", { type: "text/csv" }));
+  }, [chooseFile]);
+
   useEffect(() => {
     if (!new URLSearchParams(window.location.search).has("sample")) return;
-
-    let cancelled = false;
-
-    async function loadSample() {
-      const response = await fetch("/sample_leads.csv");
-      if (!response.ok) return;
-
-      const blob = await response.blob();
-      if (!cancelled) {
-        await chooseFile(
-          new File([blob], "sample_leads.csv", { type: "text/csv" }),
-        );
-      }
-    }
-
-    void loadSample();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [chooseFile]);
+    const timer = setTimeout(() => void loadSample(), 0);
+    return () => clearTimeout(timer);
+  }, [loadSample]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -116,7 +121,11 @@ export default function UploadPage() {
         throw new Error(responseError(body));
       }
 
-      setImported(UploadResponseSchema.parse(body).imported);
+      const count = UploadResponseSchema.parse(body).imported;
+      setImported(count);
+      await refresh();
+      // Take the user straight to the live table so they can watch it run.
+      router.push("/leads");
     } catch (uploadError) {
       setError(
         uploadError instanceof Error
@@ -128,128 +137,210 @@ export default function UploadPage() {
     }
   }
 
+  const missing = headers.length
+    ? REQUIRED_FIELDS.filter((field) => !headers.includes(field))
+    : [];
+  const ready = Boolean(file) && rowCount > 0 && missing.length === 0;
+
   return (
-    <AppShell active="upload" leadCount={leads.length}>
-      <div className="max-w-[31rem]">
-        <header className="border-b border-border pb-3">
-          <h1 className="text-xl font-semibold">Import leads</h1>
-          <p className="mt-1 text-xs text-muted">
-            One row per prospect. Scout visits each website, scores the fit and
-            drafts an opener.
-          </p>
-        </header>
+    <PageContainer width="narrow">
+      <PageHeader
+        title="Import CSV"
+        description="One row per prospect. Scout researches each website, scores the fit and drafts a personal opener."
+      />
 
-        <form className="mt-3" onSubmit={handleSubmit}>
-          <Dropzone
-            file={file}
-            disabled={uploading}
-            onFileChange={(nextFile) => void chooseFile(nextFile)}
-          />
+      <form className="mt-6" onSubmit={handleSubmit}>
+        <Dropzone
+          file={file}
+          disabled={uploading}
+          onFileChange={(nextFile) => void chooseFile(nextFile)}
+        />
 
+        {!file ? (
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-[0.8125rem]">
+            <button
+              type="button"
+              onClick={() => void loadSample()}
+              className="pressable focus-ring inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 font-medium text-accent hover:bg-accent-soft"
+            >
+              <Sparkles className="size-3.5" strokeWidth={2} aria-hidden="true" />
+              Try it with sample data
+            </button>
+            <a
+              href="/sample_leads.csv"
+              download
+              className="focus-ring inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-fg-2 hover:text-fg"
+            >
+              <Download className="size-3.5" strokeWidth={2} aria-hidden="true" />
+              Download the sample CSV
+            </a>
+          </div>
+        ) : null}
+
+        <AnimatePresence initial={false}>
           {file && rowCount > 0 ? (
-            <section className="mt-3 overflow-hidden rounded-md border border-border bg-surface">
-              <div className="flex items-center border-b border-border px-3 py-3">
-                <span className="text-xs font-medium">{file.name}</span>
-                <span className="ml-2 text-xs text-muted">
-                  {rowCount} rows
+            <motion.section
+              key={file.name + rowCount}
+              className="mt-4 overflow-hidden rounded-card bg-surface shadow-card"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 8 }}
+              aria-label="CSV preview"
+            >
+              <div className="flex items-center gap-3 px-4 py-3.5 sm:px-5">
+                <span className="flex size-9 items-center justify-center rounded-[0.625rem] bg-[color-mix(in_srgb,var(--success)_12%,transparent)] text-success">
+                  <FileSpreadsheet className="size-[1.125rem]" strokeWidth={1.75} aria-hidden="true" />
                 </span>
+                <div className="min-w-0">
+                  <p className="truncate text-[0.875rem] font-medium">{file.name}</p>
+                  <p className="tabular text-xs text-fg-2">
+                    {rowCount} {rowCount === 1 ? "prospect" : "prospects"} · {headers.length} columns
+                  </p>
+                </div>
                 <button
                   type="button"
-                  className="ml-auto text-xs text-muted underline hover:text-foreground"
+                  aria-label="Remove file"
+                  className="pressable focus-ring ml-auto inline-flex size-8 items-center justify-center rounded-full text-fg-2 hover:bg-fill hover:text-fg"
                   onClick={() => void chooseFile(null)}
                 >
-                  Remove
+                  <X className="size-4" strokeWidth={2} aria-hidden="true" />
                 </button>
               </div>
-              <div className="overflow-x-auto">
-                <table className="w-full min-w-[30rem] text-left text-[13.5px]">
-                  <thead className="border-b border-border text-xs text-muted">
-                    <tr>
-                      {[
-                        "company",
-                        "website",
-                        "contact_name",
-                        "title",
-                        "email",
-                      ].map((field) => (
-                        <th key={field} className="whitespace-nowrap px-2 py-2 font-normal">
-                          <span className="mr-1 text-success">✓</span>
-                          {field}
-                        </th>
-                      ))}
+
+              <div className="flex flex-wrap gap-1.5 border-t border-separator px-4 py-3 sm:px-5">
+                {REQUIRED_FIELDS.map((field) => {
+                  const present = headers.includes(field);
+                  return (
+                    <span
+                      key={field}
+                      className={`inline-flex h-6 items-center gap-1 rounded-chip px-2 font-mono text-[0.75rem] ${
+                        present
+                          ? "bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success"
+                          : "bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger"
+                      }`}
+                    >
+                      {present ? (
+                        <Check className="size-3" strokeWidth={2.5} aria-hidden="true" />
+                      ) : (
+                        <X className="size-3" strokeWidth={2.5} aria-hidden="true" />
+                      )}
+                      {field}
+                    </span>
+                  );
+                })}
+              </div>
+
+              <div className="overflow-x-auto border-t border-separator">
+                <table className="w-full min-w-[36rem] text-left text-[0.8125rem]">
+                  <thead>
+                    <tr className="type-eyebrow">
+                      <th className="py-2 pr-3 pl-4 font-medium sm:pl-5">Company</th>
+                      <th className="px-3 py-2 font-medium">Website</th>
+                      <th className="px-3 py-2 font-medium">Contact</th>
+                      <th className="py-2 pr-4 pl-3 font-medium sm:pr-5">Email</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border">
+                  <tbody>
                     {previewRows.map((row, index) => (
-                      <tr key={`${row.email}-${index}`}>
-                        <td className="whitespace-nowrap px-2 py-2 font-medium">
-                          {row.company}
-                        </td>
-                        <td className="whitespace-nowrap px-2 py-2">
+                      <motion.tr
+                        key={`${row.email}-${index}`}
+                        className="border-t border-separator"
+                        initial={{ opacity: 0, y: 6 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ type: "spring", bounce: 0, duration: 0.35, delay: 0.03 * index }}
+                      >
+                        <td className="py-2.5 pr-3 pl-4 font-medium whitespace-nowrap sm:pl-5">{row.company}</td>
+                        <td className="px-3 py-2.5 whitespace-nowrap text-fg-2">
                           {row.website?.replace(/^https?:\/\/(www\.)?/, "")}
                         </td>
-                        <td className="whitespace-nowrap px-2 py-2">
+                        <td className="px-3 py-2.5 whitespace-nowrap">
                           {row.contact_name}
+                          <span className="text-fg-2"> · {row.title}</span>
                         </td>
-                        <td className="whitespace-nowrap px-2 py-2">
-                          {row.title}
-                        </td>
-                        <td className="whitespace-nowrap px-2 py-2">
-                          {row.email}
-                        </td>
-                      </tr>
+                        <td className="py-2.5 pr-4 pl-3 whitespace-nowrap text-fg-2 sm:pr-5">{row.email}</td>
+                      </motion.tr>
                     ))}
                   </tbody>
                 </table>
               </div>
               {rowCount > previewRows.length ? (
-                <p className="border-t border-border px-3 py-2 text-xs text-muted">
+                <p className="tabular border-t border-separator px-4 py-2.5 text-xs text-fg-2 sm:px-5">
                   and {rowCount - previewRows.length} more
                 </p>
               ) : null}
-            </section>
+            </motion.section>
           ) : null}
+        </AnimatePresence>
 
+        <AnimatePresence>
+          {error ? (
+            <motion.div
+              className="mt-4 flex gap-2.5 rounded-btn bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] p-3.5 text-[0.8125rem] text-danger"
+              role="alert"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+            >
+              <CircleAlert className="mt-0.5 size-4 shrink-0" strokeWidth={2} aria-hidden="true" />
+              {error}
+            </motion.div>
+          ) : null}
+          {missing.length > 0 ? (
+            <motion.p
+              className="mt-4 text-[0.8125rem] text-danger"
+              role="alert"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              Missing {missing.length === 1 ? "column" : "columns"}: {missing.join(", ")}.
+            </motion.p>
+          ) : null}
+          {imported !== null ? (
+            <motion.p
+              className="mt-4 flex items-center gap-2 text-[0.8125rem] text-success"
+              role="status"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+            >
+              <Check className="size-4" strokeWidth={2.5} aria-hidden="true" />
+              Imported {imported} {imported === 1 ? "lead" : "leads"}. Opening the live table…
+            </motion.p>
+          ) : null}
+        </AnimatePresence>
+
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <Button type="submit" size="drawer" disabled={!ready || uploading} className="min-w-44">
+            {uploading ? (
+              <>
+                <span className="size-3.5 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+                Starting research…
+              </>
+            ) : (
+              <>
+                Start research
+                {ready ? <span className="tabular opacity-80">· {rowCount}</span> : null}
+                <ArrowRight className="size-4" strokeWidth={2} aria-hidden="true" />
+              </>
+            )}
+          </Button>
           {uploading ? (
-            <p className="mt-3 text-xs text-muted" role="status">
-              Uploading and validating the CSV…
+            <p className="text-[0.8125rem] text-fg-2" role="status">
+              Validating rows…
             </p>
           ) : null}
+        </div>
+      </form>
 
-          {error ? (
-            <div
-              className="mt-3 rounded-md border border-danger p-3 text-xs text-danger"
-              role="alert"
-            >
-              {error}
-            </div>
-          ) : null}
-
-          {imported !== null ? (
-            <div
-              className="mt-3 rounded-md border border-success p-3 text-xs text-success"
-              role="status"
-            >
-              Imported {imported} {imported === 1 ? "lead" : "leads"}. Research
-              is running in the background.
-            </div>
-          ) : null}
-
-          <div className="mt-3 flex flex-wrap items-center gap-3">
-            <Button type="submit" disabled={!file || uploading}>
-              {uploading ? "Starting…" : "Start research"}
-            </Button>
-            <a
-              href="/sample_leads.csv"
-              download
-              className="text-xs text-accent underline hover:text-accent-hover"
-            >
-              Download the sample CSV
-            </a>
-            {imported !== null ? <Button href="/leads" variant="secondary">View leads</Button> : null}
+      <section className="mt-10 grid gap-3 sm:grid-cols-3" aria-label="What happens next">
+        {steps.map((step, index) => (
+          <div key={step.title} className="rounded-card bg-surface p-4 shadow-card">
+            <p className="tabular text-xs font-medium text-accent">Step {index + 1}</p>
+            <p className="type-heading mt-1 text-[0.9375rem]">{step.title}</p>
+            <p className="mt-0.5 text-[0.8125rem] leading-snug text-fg-2">{step.body}</p>
           </div>
-        </form>
-      </div>
-    </AppShell>
+        ))}
+      </section>
+    </PageContainer>
   );
 }
